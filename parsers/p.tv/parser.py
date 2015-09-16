@@ -1,12 +1,14 @@
+#!/usr/bin/python2
+# -*- coding: utf-8 -*-
 import urllib
 import json
 import datetime
 from lxml.html import fromstring
 from lxml.html import tostring
 def getDate(day, month, year):
-    months=['Января','Февраля','Марта','Апреля','Майя','Июня','Июля','Августа','Сентября','Октября','Ноября','Декабря'];
+    months=['РЇРЅРІР°СЂСЏ','Р¤РµРІСЂР°Р»СЏ','РњР°СЂС‚Р°','РђРїСЂРµР»СЏ','РњР°Р№СЏ','РСЋРЅСЏ','РСЋР»СЏ','РђРІРіСѓСЃС‚Р°','РЎРµРЅС‚СЏР±СЂСЏ','РћРєС‚СЏР±СЂСЏ','РќРѕСЏР±СЂСЏ','Р”РµРєР°Р±СЂСЏ'];
     month = int(month) - 1;
-    return str(day+" "+months[month]+" "+year);
+    return str(day+" ")+str(months[month]).decode('utf8').encode('cp1251')+str(" "+year);
 def getData(url):
     host = "pornoboss.tv"
     html = urllib.urlopen(url).read();
@@ -27,12 +29,12 @@ def getData(url):
         
     UrlDate = ".//*[@id='content']/div[2]/div[2]/div[3]/text()";
     date = page.xpath(UrlDate);
-    mydate = date[0].encode("cp1251").split(",");
-    if(mydate[0]=="Сегодня"):
+    mydate = date[0].split(",");
+    if(mydate[0]==u"РЎРµРіРѕРґРЅСЏ"):
         dateArr = str(datetime.date.today()).split("-");
         dateVideo = getDate(dateArr[2], dateArr[1], dateArr[0]);
     else:
-        if(mydate[0]=="Вчера"):
+        if(mydate[0]==u"Р’С‡РµСЂР°"):
             dateArr = str(datetime.date.today() - datetime.timedelta(days=1)).split("-");
             dateVideo = getDate(dateArr[2], dateArr[1], dateArr[0]);
         else:
@@ -55,10 +57,10 @@ def getResult(url):
     #jsonResult = [];
     for item in UrlVideo:
         #jsonResult.append(getData(item));
-        with open('data.json', 'a') as outfile:json.dump(getData(item), outfile, sort_keys = True, indent = 4, ensure_ascii = False);
-        f = open('data.json', 'a');
-        f.write(",");
-        f.close();
+        with open('pornoboss.json', 'a') as outfile:
+            json.dump(getData(item), outfile, ensure_ascii = False);
+            outfile.write(','+'\n');
+        
 def main():
     i=1;
     url = "http://pornoboss.tv";
